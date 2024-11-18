@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学费转盘抽奖</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .wheel-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 20px auto;
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            border-radius: 50%;
+            border: 10px solid #333;
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            transform: rotate(0deg);
+        }
+
+        .pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            width: 40px;
+            height: 40px;
+            background-color: red;
+            clip-path: polygon(50% 100%, 0 0, 100% 0);
+        }
+
+        .section {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: 100% 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+        }
+
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>学费转盘抽奖</h1>
+        <div class="wheel-container">
+            <div class="pointer"></div>
+            <div class="wheel" id="wheel"></div>
+        </div>
+        <button onclick="spinWheel()" id="spinBtn">开始抽奖</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        const sections = [
+            { amount: 'RM 8', color: '#4F46E5' },
+            { amount: 'RM 18', color: '#7C3AED' },
+            { amount: 'RM 28', color: '#EC4899' },
+            { amount: 'RM 38', color: '#F59E0B' },
+            { amount: 'RM 68', color: '#10B981' },
+            { amount: 'RM 88', color: '#6366F1' }
+        ];
+
+        // 创建转盘扇形
+        const wheel = document.getElementById('wheel');
+        sections.forEach((section, index) => {
+            const sectionElement = document.createElement('div');
+            sectionElement.className = 'section';
+            sectionElement.style.transform = `rotate(${index * 60}deg)`;
+            sectionElement.style.backgroundColor = section.color;
+            sectionElement.textContent = section.amount;
+            wheel.appendChild(sectionElement);
+        });
+
+        let canSpin = true;
+
+        function spinWheel() {
+            if (!canSpin) return;
+            
+            const spinBtn = document.getElementById('spinBtn');
+            const result = document.getElementById('result');
+            
+            spinBtn.disabled = true;
+            canSpin = false;
+
+            // 随机旋转角度
+            const spins = 5; // 完整圈数
+            const degrees = Math.floor(Math.random() * 360); // 额外的随机度数
+            const totalDegrees = spins * 360 + degrees;
+            
+            wheel.style.transform = `rotate(${totalDegrees}deg)`;
+
+            // 计算结果
+            setTimeout(() => {
+                const finalDegree = degrees % 360;
+                const sectionIndex = Math.floor((360 - finalDegree) / (360 / sections.length));
+                result.textContent = `抽奖结果：${sections[sectionIndex].amount}`;
+                spinBtn.textContent = '已完成抽奖';
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
